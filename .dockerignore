@@ -1,0 +1,5 @@
+target
+.git
+*.tsv.out
+Dockerfile
+.dockerignore

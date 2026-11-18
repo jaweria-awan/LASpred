@@ -6,6 +6,13 @@ This is a Rust port of a Java tool written in 2011 (`FinalCode`). It uses the
 same features and coefficients, and it fixes the original's bugs (listed
 below). It checks the port against output captured from the original program.
 
+> **Legacy reference.** This repository is a new implementation, not the
+> original code. The 2011 Java version is kept unchanged, with steps to run it,
+> at **https://github.com/jaweria-awan/LASpred_legacy**. Use it to see where the
+> model came from or to reproduce the original results. Use this repository
+> for actual work. The differences are listed under
+> [Fixes relative to the original Java](#fixes-relative-to-the-original-java).
+
 ## Quick start
 
 Only Docker is needed.

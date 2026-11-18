@@ -1,3 +1,6 @@
 /target
 *.tsv.out
 .DS_Store
+
+# Output from trying the examples
+examples/*.tsv

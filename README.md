@@ -6,6 +6,66 @@ This is a Rust port of a Java tool written in 2011 (`FinalCode`). It uses the
 same features and coefficients, and it fixes the original's bugs (listed
 below). It checks the port against output captured from the original program.
 
+## Quick start
+
+Only Docker is needed.
+
+```sh
+git clone git@github.com:jaweria-awan/LASpred.git && cd LASpred
+docker build -t acetyl-scan .              # build the tool
+docker build --target test .               # optional: run all tests
+
+cd examples
+docker run --rm -v "$PWD":/data acetyl-scan scan test_proteins.fasta > scores.tsv
+```
+
+`examples/test_proteins.fasta` contains histone H3.1, histone H4, ubiquitin and
+one deliberately messy record (lowercase, an `X`, a blank line, a trailing `*`).
+The terminal prints a summary:
+
+```
+proteins=4 lysines=42 scored=30 predicted=30 skipped: near_terminus=9 non_standard_residue=3
+```
+
+Try next:
+
+```sh
+# Also list lysines that could not be scored, with the reason
+docker run --rm -v "$PWD":/data acetyl-scan scan test_proteins.fasta --include-skipped
+
+# Only sites scoring above your own cutoff
+docker run --rm -v "$PWD":/data acetyl-scan scan test_proteins.fasta --threshold 285 --only-predicted
+
+# Your own proteins: put the file in the current folder
+docker run --rm -v "$PWD":/data acetyl-scan scan my_proteins.fasta > my_scores.tsv
+
+# All options
+docker run --rm acetyl-scan scan --help
+```
+
+### Reading the output
+
+`scores.tsv` is a tab-separated table (opens in Excel), one row per lysine:
+
+| Column | Meaning |
+|---|---|
+| `protein_id` | First word of the FASTA header |
+| `position` | Position of the K in the protein, counting from 1 (including the initial Met) |
+| `window` | The 21 residues around it, with the K in the middle |
+| 9 feature columns | Each feature's contribution to the score (see [Model](#model)) |
+| `missing_dimers` | Pairs in the window with no table value (CW, MW, WM); usually 0 |
+| `total` | **The score. Higher means more similar to known acetylation sites** |
+| `predicted` | 1 if `total` > threshold, else 0 |
+| `status` | `scored`, `near_terminus` (fewer than 10 residues on one side) or `non_standard_residue` |
+
+**Sort by `total` to rank sites.** Don't rely on `predicted` with the default
+threshold; it marks nearly every lysine (see below). In the example file the
+top hits are H4 positions 13 and 17 and H3 position 15, which are the known
+acetylation sites H4K12, H4K16 and H3K14 (histone names skip the initial Met).
+
+The example sequences are for trying the tool. Download them from UniProt
+(P68431, P62805, P0CG48) before using them in research.
+
 ## Model
 
 For every lysine with 10 residues on each side, the 21-residue window gets

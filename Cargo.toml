@@ -1,0 +1,16 @@
+[package]
+name = "acetyl-scan"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.80"
+description = "Lysine acetylation site scoring from physicochemical, positional and dipeptide features (Rust port of a 2011 Java tool)"
+authors = ["Javeria <jaweria.awan@gmail.com>"]
+readme = "README.md"
+
+[dependencies]
+anyhow = "1.0"
+clap = { version = "4.5", features = ["derive"] }
+
+[profile.release]
+lto = true
+codegen-units = 1
